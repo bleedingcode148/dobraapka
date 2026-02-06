@@ -8,11 +8,39 @@ const dataParams = ['name', 'surname', 'sex', 'birthday', 'pesel', 'mdow_series'
 // Sprawdź czy są jakiekolwiek parametry danych (nie tylko tab)
 const hasDataParams = dataParams.some(param => params.has(param));
 
-// Jeśli są parametry danych, przekieruj do card.html z tymi parametrami
-if (hasDataParams) {
-  const queryString = params.toString();
-  window.location.href = `card.html?${queryString}`;
-}
+// USUNIĘTO: Automatyczne przekierowanie do card.html - teraz użytkownik może swobodnie nawigować
+
+// Zaktualizuj sendTo function, aby przekazywała parametry jeśli istnieją
+document.addEventListener('DOMContentLoaded', function() {
+    const queryString = params.toString();
+    const ROUTES = {
+        home: 'home.html',
+        services: 'services.html',
+        qr: 'qr.html',
+        more: 'more.html',
+        moreid: 'moreid.html',
+        id: 'id.html',
+        shortcuts: 'shortcuts.html',
+        pesel: 'pesel.html',
+        scanqr: 'scanqr.html',
+        showqr: 'showqr.html',
+        gen: 'gen.html',
+        card: 'card.html',
+    };
+    
+    window.sendTo = function(key) {
+        const file = ROUTES[String(key)] || (String(key).endsWith('.html') ? String(key) : String(key) + '.html');
+        const href = file + (queryString ? `?${queryString}` : '');
+        window.location.href = href;
+    };
+    
+    // Dodaj event listenery dla bottom bar
+    document.querySelectorAll(".bottom_element_grid").forEach((element) => {
+        element.addEventListener('click', () => {
+            sendTo(element.getAttribute("send"))
+        })
+    });
+});
 
 const cardContainer = document.querySelector('.card-container');
 let startX;
